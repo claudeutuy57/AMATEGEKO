@@ -41,7 +41,12 @@
 
     <!-- Question Card -->
     <div class="card card-custom p-4 p-md-5 mb-4 shadow-sm">
-        {% if question.road_sign %}
+        {% if question.image %}
+        <div class="text-center mb-4">
+            <img src="{{ question.image.url }}" class="img-fluid rounded border shadow-sm mb-2" style="max-height: 220px; max-width: 100%; object-fit: contain;" alt="Scenario Image">
+            <div><span class="badge bg-light text-dark border">Ishusho y'Ikibazo (Road Sign / Scenario)</span></div>
+        </div>
+        {% elif question.road_sign %}
         <div class="text-center mb-4">
             <div class="sign-graphic-container mb-2" style="width: 130px; height: 130px;">
                 {{ question.road_sign.svg_content|safe }}

@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# Environment variables
+.env
+.env.local
+
+# Django
+*.log
+local_settings.py
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# Antigravity / Brain logs
+.gemini/

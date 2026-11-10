@@ -106,23 +106,19 @@ def custom_exam_builder_view(request):
 
 def custom_exam_take_view(request):
     """
-    Takes parameters from GET/POST and starts a customized live examination.
+    Takes parameters from GET/POST and starts a customized live examination
+    with a balanced mix of road signs/images and text-based traffic rules.
     """
     cat_id = request.GET.get('category', '')
     q_count = int(request.GET.get('count', 20))
     duration_min = int(request.GET.get('duration', q_count)) # default 1 min per question
     difficulty = request.GET.get('difficulty', '')
 
-    questions_qs = Question.objects.filter(is_active=True).select_related('category', 'road_sign').prefetch_related('choices')
-
-    if cat_id:
-        questions_qs = questions_qs.filter(category_id=cat_id)
-    if difficulty in ['EASY', 'MEDIUM', 'HARD']:
-        questions_qs = questions_qs.filter(difficulty=difficulty)
-
-    questions = list(questions_qs.order_by('?')[:q_count])
-    if not questions:
-        questions = list(Question.objects.filter(is_active=True).order_by('?')[:q_count])
+    questions = get_mixed_exam_questions(
+        total_count=q_count,
+        cat_id=cat_id if cat_id else None,
+        difficulty=difficulty if difficulty else None
+    )
 
     questions_data = []
     for idx, q in enumerate(questions, 1):
@@ -143,6 +139,8 @@ def custom_exam_take_view(request):
                 'svg_content': q.road_sign.svg_content,
             }
 
+        image_url = q.image.url if q.image else None
+
         questions_data.append({
             'index': idx,
             'id': q.id,
@@ -151,6 +149,7 @@ def custom_exam_take_view(request):
             'text_en': q.question_text_en,
             'category': q.category.name_rw,
             'road_sign': sign_info,
+            'image_url': image_url,
             'choices': choices_data,
         })
 
@@ -180,18 +179,58 @@ def mock_exam_start(request):
     })
 
 
+def get_mixed_exam_questions(total_count=20, cat_id=None, difficulty=None):
+    """
+    Selects a balanced mix of road signs/images and text-based traffic rule questions.
+    Typical ratio: ~45% visual/signs, ~55% text/words.
+    """
+    base_qs = Question.objects.filter(is_active=True).select_related('category', 'road_sign').prefetch_related('choices')
+    if cat_id:
+        base_qs = base_qs.filter(category_id=cat_id)
+    if difficulty in ['EASY', 'MEDIUM', 'HARD']:
+        base_qs = base_qs.filter(difficulty=difficulty)
+
+    # 1. Sign / visual questions (has road_sign or image)
+    sign_qs = base_qs.filter(
+        Q(road_sign__isnull=False) | (Q(image__isnull=False) & ~Q(image=''))
+    )
+
+    # 2. Text / word questions (no road_sign and no image)
+    word_qs = base_qs.filter(
+        road_sign__isnull=True,
+        image__in=['', None]
+    )
+
+    desired_signs = max(1, round(total_count * 0.45)) # ~9 for 20 questions
+    desired_words = total_count - desired_signs       # ~11 for 20 questions
+
+    signs_list = list(sign_qs.order_by('?')[:desired_signs])
+    words_list = list(word_qs.order_by('?')[:desired_words])
+
+    # If not enough in one pool, top up from the other
+    if len(signs_list) < desired_signs:
+        needed = desired_signs - len(signs_list)
+        extra_words = list(word_qs.exclude(id__in=[q.id for q in words_list]).order_by('?')[:needed])
+        words_list.extend(extra_words)
+
+    if len(words_list) < desired_words:
+        needed = desired_words - len(words_list)
+        extra_signs = list(sign_qs.exclude(id__in=[q.id for q in signs_list]).order_by('?')[:needed])
+        signs_list.extend(extra_signs)
+
+    combined = signs_list + words_list
+    import random
+    random.shuffle(combined)
+    return combined[:total_count]
+
+
 def mock_exam_view(request):
     """
-    Renders the live 20-question mock official exam with a 20-minute countdown timer.
+    Renders the live 20-question mock official exam with a balanced mix
+    of road signs/images and text-based traffic rules questions.
     """
     total_questions = settings.RWANDA_EXAM_TOTAL_QUESTIONS
-
-    # Pull 20 random active questions with choices
-    questions = Question.objects.filter(is_active=True).select_related('category', 'road_sign').prefetch_related('choices').order_by('?')[:total_questions]
-
-    if questions.count() < total_questions:
-        # Fallback if fewer questions in database
-        questions = Question.objects.filter(is_active=True).select_related('category', 'road_sign').prefetch_related('choices')[:total_questions]
+    questions = get_mixed_exam_questions(total_count=total_questions)
 
     # Structure questions for frontend
     questions_data = []
@@ -213,6 +252,8 @@ def mock_exam_view(request):
                 'svg_content': q.road_sign.svg_content,
             }
 
+        image_url = q.image.url if q.image else None
+
         questions_data.append({
             'index': idx,
             'id': q.id,
@@ -221,6 +262,7 @@ def mock_exam_view(request):
             'text_en': q.question_text_en,
             'category': q.category.name_rw,
             'road_sign': sign_info,
+            'image_url': image_url,
             'choices': choices_data,
         })
 

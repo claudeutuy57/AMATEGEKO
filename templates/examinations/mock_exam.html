@@ -211,12 +211,23 @@ function renderQuestion(index) {
     document.getElementById("qTextRw").innerText = q.text_rw;
     document.getElementById("qTextEn").innerText = q.text_en || "";
 
-    // Road sign check
+    // Road sign / Image check
     const signBox = document.getElementById("qSignContainer");
-    if (q.road_sign && q.road_sign.svg_content) {
+    const signSvg = document.getElementById("qSignSvg");
+    const signLabel = document.getElementById("qSignLabel");
+
+    if (q.image_url) {
         signBox.style.display = "block";
-        document.getElementById("qSignSvg").innerHTML = q.road_sign.svg_content;
-        document.getElementById("qSignLabel").innerText = `[${q.road_sign.code}] ${q.road_sign.name_rw}`;
+        signSvg.style.width = "auto";
+        signSvg.style.height = "auto";
+        signSvg.innerHTML = `<img src="${q.image_url}" class="img-fluid rounded border shadow-sm mb-2" style="max-height: 200px; max-width: 100%; object-fit: contain;">`;
+        signLabel.innerText = "Ishusho y'ikibazo (Scenario / Sign)";
+    } else if (q.road_sign && q.road_sign.svg_content) {
+        signBox.style.display = "block";
+        signSvg.style.width = "130px";
+        signSvg.style.height = "130px";
+        signSvg.innerHTML = q.road_sign.svg_content;
+        signLabel.innerText = `[${q.road_sign.code}] ${q.road_sign.name_rw}`;
     } else {
         signBox.style.display = "none";
     }
