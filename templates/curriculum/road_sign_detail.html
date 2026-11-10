@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}[{{ sign.code }}] {{ sign.name_rw }} - Ibisobanuro by'Icyapa{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Ahabanza</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'curriculum:road_signs' %}">Ibyapa</a></li>
+            <li class="breadcrumb-item active" aria-current="page">[{{ sign.code }}] {{ sign.name_rw }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <div class="col-lg-5">
+            <div class="card card-custom p-4 text-center">
+                <div class="sign-graphic-container my-4" style="width: 180px; height: 180px;">
+                    {{ sign.svg_content|safe }}
+                </div>
+                <h3 class="fw-bold text-dark mt-2 mb-1">[{{ sign.code }}] {{ sign.name_rw }}</h3>
+                <h5 class="text-muted mb-3">{{ sign.name_en }}</h5>
+                <span class="badge bg-danger fs-6 px-3 py-2 align-self-center">{{ sign.get_sign_type_display }}</span>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card card-custom p-4 p-md-5">
+                <h4 class="fw-bold text-primary mb-3">
+                    <i class="fa-solid fa-circle-info me-2"></i> Icyo Gisobanura (Meaning)
+                </h4>
+                <p class="lead text-dark fs-6 mb-4">
+                    {{ sign.meaning_rw }}
+                </p>
+                <p class="text-secondary small fst-italic mb-4">
+                    English: {{ sign.meaning_en }}
+                </p>
+
+                <h5 class="fw-bold text-dark mb-2">
+                    <i class="fa-solid fa-book me-2 text-danger"></i> Ibisobanuro Birambuye n'Amabwiriza
+                </h5>
+                <p class="text-secondary mb-4">
+                    {{ sign.explanation_rw }}
+                </p>
+
+                <div class="p-3 rounded bg-light border-start border-4 border-primary mb-4">
+                    <span class="small text-muted fw-bold d-block">INGINGO Y'AMATEGEKO (LEGAL BASIS):</span>
+                    <span class="fw-bold text-dark">{{ sign.legal_reference }}</span>
+                </div>
+
+                <div class="d-flex gap-3">
+                    <a href="{% url 'curriculum:road_signs' %}" class="btn btn-outline-secondary">
+                        <i class="fa-solid fa-arrow-left me-1"></i> Subira ku Byapa Byose
+                    </a>
+                    <a href="{% url 'examinations:practice' %}?category=road-traffic-signs" class="btn btn-rw-primary">
+                        <i class="fa-solid fa-pen-to-square me-1"></i> Imenyereze Ibi Bibazo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if related_signs %}
+    <div class="mt-5 pt-4 border-top">
+        <h4 class="fw-bold text-dark mb-3">Ibindi Byapa Byo Muri Iki Cyiciro</h4>
+        <div class="row g-3">
+            {% for rel in related_signs %}
+            <div class="col-6 col-md-3">
+                <a href="{% url 'curriculum:road_sign_detail' rel.code %}" class="card card-custom p-3 text-center text-decoration-none h-100">
+                    <div class="sign-graphic-container mb-2" style="width: 70px; height: 70px;">
+                        {{ rel.svg_content|safe }}
+                    </div>
+                    <span class="badge bg-light text-dark border mb-1 align-self-center">{{ rel.code }}</span>
+                    <h6 class="fw-bold text-dark mb-0 small">{{ rel.name_rw }}</h6>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

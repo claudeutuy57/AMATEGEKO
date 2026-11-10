@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}Twandikire - Contact Us{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row g-5">
+        <div class="col-lg-7">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-bold mb-3">
+                TWANDIKIRE
+            </span>
+            <h1 class="fw-extrabold mb-3" style="color: #0f2b5c;">
+                Tugufashe Kwitegura Ikizamini Cyawe
+            </h1>
+            <p class="text-secondary mb-4">
+                Ufite ikibazo cyangwa inyunganizi ku mategeko y'umuhanda n'ikoranabuhanga ryacu? Twandikire hano, itsinda ryacu rizakubwira vuba bishoboka.
+            </p>
+
+            <form method="post" class="card card-custom p-4 shadow-sm">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Amazina yawe *</label>
+                        <input type="text" name="name" class="form-control" placeholder="Urugero: Eric Mugabo" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Email *</label>
+                        <input type="email" name="email" class="form-control" placeholder="izina@email.com" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Nimero ya Telefone</label>
+                        <input type="text" name="phone" class="form-control" placeholder="0788 123 456">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Impamvu y'Ubutumwa</label>
+                        <input type="text" name="subject" class="form-control" placeholder="Urugero: Ikibazo ku cyapa cya STOP">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Ubutumwa bwawe *</label>
+                        <textarea name="message" class="form-control" rows="5" placeholder="Andika ubutumwa bwawe hano..." required></textarea>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-rw-primary px-4 py-2">
+                            <i class="fa-solid fa-paper-plane me-2"></i> Ohereza Ubutumwa
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card card-custom p-4 mb-4">
+                <h5 class="fw-bold mb-3" style="color: #0f2b5c;">
+                    <i class="fa-solid fa-location-dot text-danger me-2"></i> Ibiro byacu
+                </h5>
+                <p class="text-secondary small mb-3">
+                    Kigali, Rwanda<br>
+                    KN 5 Rd, Gasabo, Kigali
+                </p>
+
+                <h6 class="fw-bold mb-2">Amasaha y'Akazi:</h6>
+                <p class="text-secondary small mb-3">
+                    Kuwa Mbere - Kuwa Gatanu: 8:00 AM - 5:00 PM<br>
+                    Kuwa Gatandatu: 9:00 AM - 1:00 PM
+                </p>
+
+                <h6 class="fw-bold mb-2">Email:</h6>
+                <p class="text-secondary small mb-0">
+                    support@amategeko.rw<br>
+                    info@amategeko.rw
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

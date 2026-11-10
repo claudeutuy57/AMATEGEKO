@@ -1,0 +1,347 @@
+{% extends 'base.html' %}
+{% block title %}Ikizamini cya Leta mu Bikorwa - Live Mock Exam{% endblock %}
+
+{% block extra_css %}
+<style>
+    .q-grid-btn {
+        width: 42px;
+        height: 42px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+    .q-unanswered {
+        background-color: #f1f5f9;
+        color: #475569;
+        border: 1px solid #cbd5e1;
+    }
+    .q-answered {
+        background-color: #10b981;
+        color: #ffffff;
+        border: 1px solid #059669;
+    }
+    .q-active {
+        box-shadow: 0 0 0 3px #1e40af !important;
+        font-weight: 900;
+    }
+    .mock-choice-card {
+        cursor: pointer;
+        transition: all 0.15s;
+        border: 2px solid #e2e8f0;
+    }
+    .mock-choice-card:hover {
+        border-color: #93c5fd;
+        background-color: #f8fafc;
+    }
+    .mock-choice-card.selected {
+        border-color: #1e40af;
+        background-color: #eff6ff;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Top Bar with Progress and Countdown Timer -->
+    <div class="card card-custom p-3 mb-4 shadow-sm">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <span class="badge bg-danger fs-6 px-3 py-2">
+                    IKIZAMINI CYA LETA (OFFICIAL EXAM)
+                </span>
+                <span class="text-secondary fw-semibold">
+                    Ibibazo: <span id="answeredCount" class="text-dark fw-bold">0</span> / {{ total_questions }}
+                </span>
+            </div>
+
+            <!-- Countdown Timer -->
+            <div class="timer-badge shadow-sm" id="timerBadge">
+                <i class="fa-solid fa-stopwatch fa-spin-pulse"></i>
+                <span id="countdownDisplay">20:00</span>
+            </div>
+
+            <button type="button" class="btn btn-rw-danger" onclick="confirmSubmit()">
+                <i class="fa-solid fa-check-double me-1"></i> Soza Ikizamini (Submit)
+            </button>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Main Question Area -->
+        <div class="col-lg-8">
+            <div class="card card-custom p-4 p-md-5 shadow-sm">
+                <!-- Question Number & Category -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="badge bg-primary fs-6 px-3 py-2" id="qNumberBadge">
+                        Ikibazo #1 muri {{ total_questions }}
+                    </span>
+                    <span class="badge bg-light text-muted border" id="qCategoryBadge"></span>
+                </div>
+
+                <!-- Road Sign SVG if applicable -->
+                <div id="qSignContainer" class="text-center my-3" style="display: none;">
+                    <div class="sign-graphic-container mb-2" style="width: 130px; height: 130px;" id="qSignSvg"></div>
+                    <span class="badge bg-light text-dark border" id="qSignLabel"></span>
+                </div>
+
+                <!-- Question Text -->
+                <h3 class="fw-bold text-dark mt-2 mb-2" id="qTextRw" style="line-height: 1.4;"></h3>
+                <p class="text-secondary small fst-italic mb-4" id="qTextEn"></p>
+
+                <!-- Choices -->
+                <div class="d-flex flex-column gap-3 my-4" id="qChoicesList"></div>
+
+                <!-- Navigation Controls -->
+                <div class="d-flex justify-content-between align-items-center pt-4 border-top">
+                    <button type="button" class="btn btn-outline-secondary px-4" id="btnPrev" onclick="navigateQuestion(-1)">
+                        <i class="fa-solid fa-arrow-left me-2"></i> Ikibazo Kibanziriza
+                    </button>
+                    <button type="button" class="btn btn-rw-primary px-4" id="btnNext" onclick="navigateQuestion(1)">
+                        Ikibazo Gikurikira <i class="fa-solid fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar: Question Jump Grid (1-20) -->
+        <div class="col-lg-4">
+            <div class="card card-custom p-4 shadow-sm mb-4">
+                <h5 class="fw-bold text-dark mb-3">
+                    <i class="fa-solid fa-table-cells me-2 text-primary"></i> Urutonde rw'Ibibazo (1-{{ total_questions }})
+                </h5>
+                <p class="small text-secondary mb-3">
+                    Kanda ku mibare munsi kugira ngo uhite ujya ku kibazo wifuza:
+                </p>
+
+                <!-- Grid Buttons -->
+                <div class="d-flex flex-wrap gap-2 mb-4" id="qGridContainer"></div>
+
+                <div class="d-flex gap-3 small text-muted border-top pt-3">
+                    <div class="d-flex align-items-center gap-1">
+                        <span class="rounded bg-success d-inline-block" style="width: 14px; height: 14px;"></span> Byasubijwe
+                    </div>
+                    <div class="d-flex align-items-center gap-1">
+                        <span class="rounded bg-light border d-inline-block" style="width: 14px; height: 14px;"></span> Bitarasubizwa
+                    </div>
+                </div>
+            </div>
+
+            <div class="card bg-warning bg-opacity-10 border-warning p-3 rounded-3">
+                <small class="text-dark">
+                    <i class="fa-solid fa-circle-info text-warning me-1"></i>
+                    <strong>Icyitonderwa:</strong> Ntiwibagirwe gukanda "Soza Ikizamini" mbere y'uko igihe kirangira. Niba iminota 20 irangiye, ikizamini kizasoza mu buryo bwikora.
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Submit Confirmation Modal -->
+<div class="modal fade" id="submitModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fw-bold"><i class="fa-solid fa-circle-question me-2"></i> Kemeza Gusoza Ikizamini</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <h4 class="fw-bold mb-2">Waba wizeye neza ko ushaka gusoza?</h4>
+                <p class="text-secondary mb-3" id="modalStatusText"></p>
+                <div class="d-flex justify-content-center gap-3">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Komeza Ukore</button>
+                    <button type="button" class="btn btn-danger px-4" onclick="executeSubmit()">Soza Ubu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Load questions from view
+const questions = JSON.parse('{{ questions_json|escapejs }}');
+const totalQuestions = questions.length;
+let currentIndex = 0; // 0 to 19
+let answers = {}; // { questionId: selectedChoiceId }
+let secondsRemaining = {{ duration_seconds }};
+let timeSpent = 0;
+let timerInterval = null;
+
+// Initialize
+document.addEventListener("DOMContentLoaded", function() {
+    buildGrid();
+    renderQuestion(0);
+    startTimer();
+});
+
+function buildGrid() {
+    const grid = document.getElementById("qGridContainer");
+    grid.innerHTML = "";
+    for (let i = 0; i < totalQuestions; i++) {
+        const btn = document.createElement("div");
+        btn.className = "q-grid-btn q-unanswered";
+        btn.id = "grid-btn-" + i;
+        btn.innerText = (i + 1);
+        btn.onclick = () => renderQuestion(i);
+        grid.appendChild(btn);
+    }
+}
+
+function renderQuestion(index) {
+    if (index < 0 || index >= totalQuestions) return;
+    currentIndex = index;
+
+    // Update active highlight in grid
+    document.querySelectorAll(".q-grid-btn").forEach((btn, idx) => {
+        btn.classList.remove("q-active");
+        if (idx === currentIndex) {
+            btn.classList.add("q-active");
+        }
+    });
+
+    const q = questions[currentIndex];
+    document.getElementById("qNumberBadge").innerText = `Ikibazo #${currentIndex + 1} muri ${totalQuestions}`;
+    document.getElementById("qCategoryBadge").innerText = q.category;
+    document.getElementById("qTextRw").innerText = q.text_rw;
+    document.getElementById("qTextEn").innerText = q.text_en || "";
+
+    // Road sign check
+    const signBox = document.getElementById("qSignContainer");
+    if (q.road_sign && q.road_sign.svg_content) {
+        signBox.style.display = "block";
+        document.getElementById("qSignSvg").innerHTML = q.road_sign.svg_content;
+        document.getElementById("qSignLabel").innerText = `[${q.road_sign.code}] ${q.road_sign.name_rw}`;
+    } else {
+        signBox.style.display = "none";
+    }
+
+    // Render Choices
+    const choicesList = document.getElementById("qChoicesList");
+    choicesList.innerHTML = "";
+    const selectedChoiceId = answers[q.id];
+
+    q.choices.forEach(c => {
+        const card = document.createElement("div");
+        const isSelected = (selectedChoiceId === c.id);
+        card.className = `mock-choice-card p-3 rounded-3 d-flex align-items-center gap-3 ${isSelected ? 'selected' : ''}`;
+        card.onclick = () => selectAnswer(q.id, c.id);
+
+        card.innerHTML = `
+            <span class="badge ${isSelected ? 'bg-primary' : 'bg-light text-dark'} border fs-6 px-3 py-2 fw-bold">
+                ${c.letter}
+            </span>
+            <div class="flex-grow-1">
+                <div class="fw-semibold text-dark">${c.text_rw}</div>
+                ${c.text_en ? `<small class="text-muted">${c.text_en}</small>` : ''}
+            </div>
+            <div class="fs-5 ${isSelected ? 'text-primary' : 'text-muted'}">
+                <i class="fa-${isSelected ? 'solid fa-circle-dot' : 'regular fa-circle'}"></i>
+            </div>
+        `;
+        choicesList.appendChild(card);
+    });
+
+    // Prev / Next button states
+    document.getElementById("btnPrev").disabled = (currentIndex === 0);
+    const btnNext = document.getElementById("btnNext");
+    if (currentIndex === totalQuestions - 1) {
+        btnNext.innerHTML = `Soza Ikizamini <i class="fa-solid fa-check ms-2"></i>`;
+        btnNext.className = "btn btn-rw-danger px-4";
+        btnNext.onclick = confirmSubmit;
+    } else {
+        btnNext.innerHTML = `Ikibazo Gikurikira <i class="fa-solid fa-arrow-right ms-2"></i>`;
+        btnNext.className = "btn btn-rw-primary px-4";
+        btnNext.onclick = () => navigateQuestion(1);
+    }
+}
+
+function selectAnswer(questionId, choiceId) {
+    answers[questionId] = choiceId;
+    
+    // Update grid state
+    const gridBtn = document.getElementById("grid-btn-" + currentIndex);
+    gridBtn.classList.remove("q-unanswered");
+    gridBtn.classList.add("q-answered");
+
+    // Update answered count
+    const answeredCount = Object.keys(answers).length;
+    document.getElementById("answeredCount").innerText = answeredCount;
+
+    renderQuestion(currentIndex);
+}
+
+function navigateQuestion(delta) {
+    const nextIdx = currentIndex + delta;
+    if (nextIdx >= 0 && nextIdx < totalQuestions) {
+        renderQuestion(nextIdx);
+    }
+}
+
+// Timer management
+function startTimer() {
+    timerInterval = setInterval(() => {
+        secondsRemaining--;
+        timeSpent++;
+
+        const mins = Math.floor(secondsRemaining / 60);
+        const secs = secondsRemaining % 60;
+        document.getElementById("countdownDisplay").innerText = 
+            `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+
+        if (secondsRemaining <= 180) { // 3 minutes left warning
+            document.getElementById("timerBadge").classList.add("bg-danger", "text-white");
+        }
+
+        if (secondsRemaining <= 0) {
+            clearInterval(timerInterval);
+            alert("Igihe cy'ikizamini (iminota 20) kirangiye! Sisitemu irahita yerekana amanota yawe.");
+            executeSubmit();
+        }
+    }, 1000);
+}
+
+function confirmSubmit() {
+    const answeredCount = Object.keys(answers).length;
+    const unanswered = totalQuestions - answeredCount;
+    document.getElementById("modalStatusText").innerHTML = `
+        Umaze gusubiza <strong>${answeredCount}</strong> kuri ${totalQuestions}.<br>
+        ${unanswered > 0 ? `<span class="text-danger fw-bold">Hari ibibazo ${unanswered} utarasubiza!</span>` : `<span class="text-success fw-bold">Wasubije ibibazo byose 20!</span>`}
+    `;
+    const modal = new bootstrap.Modal(document.getElementById("submitModal"));
+    modal.show();
+}
+
+function executeSubmit() {
+    if (timerInterval) clearInterval(timerInterval);
+
+    fetch("{% url 'examinations:mock_exam_submit' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({
+            answers: answers,
+            time_spent: timeSpent
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.redirect_url) {
+            window.location.href = data.redirect_url;
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Habaye ikibazo mu kohereza ibisubizo. Ongera ugerageze.");
+    });
+}
+</script>
+{% endblock %}
+

@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} - Admin Portal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card card-custom p-4 p-md-5 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                    <div>
+                        <span class="badge bg-danger px-3 py-1 rounded-pill mb-1">ROAD SIGN EDITOR</span>
+                        <h3 class="fw-extrabold text-dark mb-0">{{ title }}</h3>
+                    </div>
+                    <a href="{% url 'dashboard:admin_road_signs' %}" class="btn btn-outline-secondary">
+                        <i class="fa-solid fa-arrow-left me-1"></i> Subira ku Rutonde
+                    </a>
+                </div>
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Kode y'Icyapa (Code) *</label>
+                            {{ form.code }}
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold">Ubwoko bw'Icyapa (Sign Type) *</label>
+                            {{ form.sign_type }}
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">Urutonde (Order)</label>
+                            {{ form.order }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Izina ry'Icyapa (Kinyarwanda) *</label>
+                            {{ form.name_rw }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Sign Name (English) *</label>
+                            {{ form.name_en }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Icyo Gisobanura (Kinyarwanda) *</label>
+                            {{ form.meaning_rw }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Meaning (English) *</label>
+                            {{ form.meaning_en }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Ibisobanuro Birambuye n'Amabwiriza</label>
+                            {{ form.explanation_rw }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Detailed Legal Explanation</label>
+                            {{ form.explanation_en }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Ingingo y'Amategeko (Legal Article)</label>
+                            {{ form.legal_reference }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">SVG Vector Code (Ishusho ya Vector)</label>
+                            {{ form.svg_content }}
+                            <small class="text-muted">Injizamo code ya SVG cyangwa ushyireho ifoto munsi.</small>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Ifoto y'Icyapa (Image Upload - Optional)</label>
+                            {{ form.image }}
+                        </div>
+                        <div class="col-12 mt-4 d-flex justify-content-between">
+                            <a href="{% url 'dashboard:admin_road_signs' %}" class="btn btn-outline-secondary">Kureka (Cancel)</a>
+                            <button type="submit" class="btn btn-rw-danger px-4 py-2">
+                                <i class="fa-solid fa-floppy-disk me-2"></i> Bika Icyapa (Save Road Sign)
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

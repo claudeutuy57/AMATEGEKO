@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %}Ibyerekeye Urubuga - About Us{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row g-5">
+        <div class="col-lg-8">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-bold mb-3">
+                INTEGO N'ICYEREKEZO
+            </span>
+            <h1 class="fw-extrabold mb-4" style="color: #0f2b5c;">
+                Ibyerekeye AMATEGEKO Y'UMUHANDA
+            </h1>
+            <p class="lead text-secondary mb-4">
+                Urubuga **AMATEGEKO Y'UMUHANDA** rwashyiriweho gufasha Abanyarwanda bose n'abashaka gukorera uruhushya rwo gutwara ibinyabiziga (Provisional Driving License) kwiga neza no gusobanukirwa amategeko y'umuhanda n'umutekano wo mu muhanda.
+            </p>
+
+            <h4 class="fw-bold text-dark mt-4 mb-3">Inkomoko y'Amategeko Twifashisha</h4>
+            <p class="text-secondary">
+                Ibibazo n'amasomo yose biri kuri uru rubuga bishingiye ku mategeko yemewe n'amategeko akurikizwa muri Repubulika y'u Rwanda, by'umwihariko:
+            </p>
+            <ul class="list-group list-group-flush mb-4">
+                <li class="list-group-item bg-transparent px-0">
+                    <i class="fa-solid fa-scale-balanced text-primary me-2"></i>
+                    <strong>Iteka rya Perezida N° 85/01 ryo ku wa 02/09/2002:</strong> Rigenga amategeko rusange y'umuhanda no kugenda mu muhanda.
+                </li>
+                <li class="list-group-item bg-transparent px-0">
+                    <i class="fa-solid fa-file-shield text-danger me-2"></i>
+                    <strong>Amategeko na politiki bya Polisi y'u Rwanda (RNP):</strong> Byerekeranye n'ibizamini by'uruhushya rw'agateganyo bitangirwa kuri Irembo.
+                </li>
+                <li class="list-group-item bg-transparent px-0">
+                    <i class="fa-solid fa-book-bookmark text-success me-2"></i>
+                    <strong>Ibyemezo mpuzamahanga bya Genève na Vienne:</strong> Byerekeye ibyapa by'umuhanda n'ibimenyetso mpuzamahanga u Rwanda rwashyizeho umukono.
+                </li>
+            </ul>
+
+            <h4 class="fw-bold text-dark mt-4 mb-3">Uko Ikizamini cya Leta Giteye</h4>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="p-3 border rounded bg-white text-center">
+                        <i class="fa-solid fa-list-ol fs-2 text-primary mb-2"></i>
+                        <h5 class="fw-bold mb-1">Ibibazo 20</h5>
+                        <p class="small text-muted mb-0">Bitoranywa mu buryo bwa mudasobwa mu byiciro byose.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 border rounded bg-white text-center">
+                        <i class="fa-solid fa-stopwatch fs-2 text-danger mb-2"></i>
+                        <h5 class="fw-bold mb-1">Iminota 20</h5>
+                        <p class="small text-muted mb-0">Isegonda kuri buri kibazo. Igihe kirangiye ryikora.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 border rounded bg-white text-center">
+                        <i class="fa-solid fa-check-double fs-2 text-success mb-2"></i>
+                        <h5 class="fw-bold mb-1">12/20 (60%)</h5>
+                        <p class="small text-muted mb-0">Amanota ntarengwa yo gutsinda no guhabwa uruhushya.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card card-custom p-4">
+                <h5 class="fw-bold mb-3" style="color: #0f2b5c;">
+                    <i class="fa-solid fa-phone-volume text-danger me-2"></i> Nimero z'Ubutabazi
+                </h5>
+                <p class="small text-muted mb-3">Hamagara izi nimero z'ubuntu igihe uhuye n'ikibazo mu muhanda mu Rwanda:</p>
+                <div class="d-flex flex-column gap-2">
+                    <div class="d-flex justify-content-between p-2 rounded bg-light border">
+                        <span class="small fw-bold">Polisi y'Umuhanda:</span>
+                        <span class="badge bg-danger fs-6">113</span>
+                    </div>
+                    <div class="d-flex justify-content-between p-2 rounded bg-light border">
+                        <span class="small fw-bold">Ubutabazi Rusange:</span>
+                        <span class="badge bg-danger fs-6">112</span>
+                    </div>
+                    <div class="d-flex justify-content-between p-2 rounded bg-light border">
+                        <span class="small fw-bold">Imbangukiragutabara (Ambulance):</span>
+                        <span class="badge bg-danger fs-6">912</span>
+                    </div>
+                    <div class="d-flex justify-content-between p-2 rounded bg-light border">
+                        <span class="small fw-bold">Abazimya Umuriro:</span>
+                        <span class="badge bg-danger fs-6">111</span>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-top text-center">
+                    <a href="{% url 'examinations:mock_exam_start' %}" class="btn btn-rw-primary w-100">
+                        Tangira Ikizamini Ubu
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

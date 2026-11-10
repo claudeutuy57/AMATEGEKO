@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}Kwimenyereza Ibibazo - Practice Examination{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center max-w-xl mx-auto mb-5">
+        <span class="badge bg-warning bg-opacity-10 text-dark px-3 py-2 rounded-pill fw-bold mb-2">
+            IMYITOZO Y'IBIBAZO
+        </span>
+        <h1 class="fw-extrabold" style="color: #0f2b5c;">
+            Hitamo Uburyo bwo Kwimenyereza
+        </h1>
+        <p class="text-secondary">
+            Wimenyereze ikibazo ku kindi, urebe igisubizo nyacyo ako kanya n'ibisobanuro byacyo.
+        </p>
+    </div>
+
+    <!-- Quick action modes -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card card-custom p-4 text-center h-100 border-primary">
+                <div class="rounded-circle bg-primary bg-opacity-10 text-primary mx-auto p-3 mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-shuffle fs-4"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Imyitozo Rusange (Mixed)</h5>
+                <p class="small text-secondary mb-3">Ibibazo bivanzemo ibyiciro byose 15 ku buryo butondekanye cyangwa buvanze.</p>
+                <a href="{% url 'examinations:practice' %}" class="btn btn-rw-primary mt-auto">
+                    Tangira Imyitozo Rusange
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card card-custom p-4 text-center h-100 border-danger">
+                <div class="rounded-circle bg-danger bg-opacity-10 text-danger mx-auto p-3 mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-award fs-4"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Ikizamini cya Leta (Simulation)</h5>
+                <p class="small text-secondary mb-3">Ibibazo 20, Iminota 20, Amanota yo gutsinda 12/20 (60%). Nka Polisi.</p>
+                <a href="{% url 'examinations:mock_exam_start' %}" class="btn btn-rw-danger mt-auto">
+                    Kora Ikizamini cya Leta
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card card-custom p-4 text-center h-100 border-warning">
+                <div class="rounded-circle bg-warning bg-opacity-10 text-dark mx-auto p-3 mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-bookmark fs-4"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Ibyo Wazirikanye (Bookmarks)</h5>
+                <p class="small text-secondary mb-3">Subiramo ibibazo byakugoye wagiye ushyira mu byo kuzirikana.</p>
+                {% if user.is_authenticated %}
+                <a href="{% url 'examinations:practice' %}?bookmarks=true" class="btn btn-outline-dark mt-auto">
+                    Subiramo Ibibazo ({{ user_bookmarks_count }})
+                </a>
+                {% else %}
+                <a href="{% url 'accounts:login' %}" class="btn btn-outline-dark mt-auto">
+                    Injira ngo ubone ibyo wabitse
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Category by category selection -->
+    <h4 class="fw-bold text-dark mb-4">Kwimenyereza Ukurikije Icyiciro (Practice by Topic)</h4>
+    <div class="row g-3">
+        {% for cat in categories %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card card-custom p-3 h-100 d-flex flex-column">
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <div class="rounded bg-light text-primary p-2 fs-5" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fa-solid {{ cat.icon }}"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-0 text-dark">{{ cat.name_rw }}</h6>
+                        <small class="text-muted">{{ cat.total_q }} Ibibazo</small>
+                    </div>
+                </div>
+                <p class="small text-secondary flex-grow-1 mb-3">
+                    {{ cat.description_rw|truncatechars:85 }}
+                </p>
+                <a href="{% url 'examinations:practice' %}?category={{ cat.slug }}" class="btn btn-sm btn-outline-primary w-100 mt-auto">
+                    <i class="fa-solid fa-play me-1"></i> Imenyereze iki cyiciro
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+

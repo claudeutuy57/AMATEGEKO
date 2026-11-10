@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Amasomo y'Amategeko y'Umuhanda - Traffic Rules Syllabus{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center max-w-xl mx-auto mb-5">
+        <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill fw-bold mb-2">
+            GAHUNDA Y'AMASOMO
+        </span>
+        <h1 class="fw-extrabold" style="color: #0f2b5c;">
+            Amategeko y'Umuhanda mu Rwanda (Syllabus)
+        </h1>
+        <p class="text-secondary">
+            Iga amategeko yose agenga kugenda mu muhanda, umuvuduko, ibyapa, no gutambuka mbere.
+        </p>
+    </div>
+
+    <div class="row g-4">
+        {% for cat in categories %}
+        <div class="col-lg-6">
+            <div class="card card-custom h-100 p-4">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="rounded-3 p-3 text-white" style="background: linear-gradient(135deg, #0f2b5c, #1e40af); width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fa-solid {{ cat.icon }} fs-4"></i>
+                    </div>
+                    <div>
+                        <span class="badge bg-secondary bg-opacity-10 text-secondary">Isomo rya {{ cat.order }}</span>
+                        <h5 class="fw-bold mb-0 text-dark">{{ cat.name_rw }}</h5>
+                        <small class="text-muted">{{ cat.name_en }}</small>
+                    </div>
+                </div>
+
+                <p class="text-secondary small mb-3">
+                    {{ cat.description_rw }}
+                </p>
+
+                {% if cat.lessons.all %}
+                <div class="list-group list-group-flush border-top pt-2 mb-3">
+                    {% for lesson in cat.lessons.all %}
+                    <a href="{% url 'curriculum:lesson_detail' lesson.slug %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-0 py-2 border-0">
+                        <span class="small fw-semibold text-primary">
+                            <i class="fa-regular fa-file-lines me-2"></i> {{ lesson.title_rw }}
+                        </span>
+                        <span class="badge bg-light text-muted">{{ lesson.estimated_read_time }} min</span>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="p-2 bg-light rounded text-muted small mb-3">
+                    <i class="fa-solid fa-circle-check text-success me-1"></i> Ibibazo byo muri iki cyiciro birahari mu kwimenyereza.
+                </div>
+                {% endif %}
+
+                <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+                    <a href="{% url 'examinations:practice' %}?category={{ cat.slug }}" class="btn btn-sm btn-rw-primary">
+                        <i class="fa-solid fa-dumbbell me-1"></i> Imenyereze Ibi Bibazo
+                    </a>
+                    <span class="small text-muted">{{ cat.questions.count }} Ibibazo</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+

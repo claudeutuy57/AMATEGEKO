@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% block title %}Gusubiramo Ikizamini #{{ attempt.id }} - Exam Review{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Ahabanza</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'examinations:exam_result' attempt.id %}">Ibisubizo</a></li>
+                    <li class="breadcrumb-item active">Gusubiramo</li>
+                </ol>
+            </nav>
+            <h2 class="fw-extrabold text-dark mb-0">
+                Gusubiramo Ibibazo n'Amakosa (Review Mistakes)
+            </h2>
+            <small class="text-secondary">
+                Amanota: <strong>{{ attempt.correct_answers }}/{{ attempt.total_questions }}</strong> | 
+                Ibyakozwe neza: <strong class="text-success">{{ total_correct }}</strong> | 
+                Amakosa: <strong class="text-danger">{{ total_wrong }}</strong>
+            </small>
+        </div>
+
+        <!-- Filter Buttons -->
+        <div class="d-flex gap-2">
+            <a href="?filter=all" class="btn btn-sm {% if filter_type == 'all' %}btn-dark{% else %}btn-outline-secondary{% endif %}">
+                Byose ({{ attempt.total_questions }})
+            </a>
+            <a href="?filter=wrong" class="btn btn-sm {% if filter_type == 'wrong' %}btn-danger{% else %}btn-outline-danger{% endif %}">
+                <i class="fa-solid fa-circle-xmark me-1"></i> Amakosa Gusa ({{ total_wrong }})
+            </a>
+            <a href="?filter=correct" class="btn btn-sm {% if filter_type == 'correct' %}btn-success{% else %}btn-outline-success{% endif %}">
+                <i class="fa-solid fa-circle-check me-1"></i> Ibyo Watsinze ({{ total_correct }})
+            </a>
+        </div>
+    </div>
+
+    <!-- Questions Review List -->
+    <div class="d-flex flex-column gap-4">
+        {% for answer in answers %}
+        <div class="card card-custom p-4 shadow-sm border-start border-4 {% if answer.is_correct %}border-success{% else %}border-danger{% endif %}">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge {% if answer.is_correct %}bg-success{% else %}bg-danger{% endif %} fs-6 px-3 py-1">
+                        {% if answer.is_correct %}
+                        <i class="fa-solid fa-check me-1"></i> WAGISUBIJE NEZA
+                        {% else %}
+                        <i class="fa-solid fa-xmark me-1"></i> WARIHEMUKIYE
+                        {% endif %}
+                    </span>
+                    <span class="badge bg-light text-dark border">Ikibazo #{{ forloop.counter }}</span>
+                    <span class="badge bg-secondary bg-opacity-10 text-secondary">{{ answer.question.category.name_rw }}</span>
+                </div>
+            </div>
+
+            <!-- Road Sign if applicable -->
+            {% if answer.question.road_sign %}
+            <div class="text-center my-3">
+                <div class="sign-graphic-container mb-2" style="width: 110px; height: 110px;">
+                    {{ answer.question.road_sign.svg_content|safe }}
+                </div>
+                <span class="badge bg-light text-dark border">
+                    [{{ answer.question.road_sign.code }}] {{ answer.question.road_sign.name_rw }}
+                </span>
+            </div>
+            {% endif %}
+
+            <h5 class="fw-bold text-dark mb-2">
+                {{ answer.question.question_text_rw }}
+            </h5>
+            {% if answer.question.question_text_en %}
+            <p class="text-secondary small fst-italic mb-3">
+                {{ answer.question.question_text_en }}
+            </p>
+            {% endif %}
+
+            <!-- Choices Breakdown -->
+            <div class="d-flex flex-column gap-2 my-3">
+                {% for choice in answer.question.choices.all %}
+                <div class="p-3 rounded border d-flex align-items-center gap-3
+                    {% if choice == answer.selected_choice and choice.is_correct %}
+                        border-success bg-success bg-opacity-10 text-success fw-bold
+                    {% elif choice == answer.selected_choice and not choice.is_correct %}
+                        border-danger bg-danger bg-opacity-10 text-danger fw-bold
+                    {% elif choice.is_correct %}
+                        border-success bg-success bg-opacity-10 text-success fw-semibold
+                    {% else %}
+                        bg-light text-muted
+                    {% endif %}
+                ">
+                    <span class="badge 
+                        {% if choice == answer.selected_choice and not choice.is_correct %}bg-danger text-white
+                        {% elif choice.is_correct %}bg-success text-white
+                        {% else %}bg-light text-dark border{% endif %} px-2 py-1">
+                        {{ choice.letter }}
+                    </span>
+                    <div class="flex-grow-1">
+                        <div>{{ choice.text_rw }}</div>
+                        {% if choice.text_en %}
+                        <small class="text-muted d-block">{{ choice.text_en }}</small>
+                        {% endif %}
+                    </div>
+                    <div>
+                        {% if choice == answer.selected_choice and not choice.is_correct %}
+                            <span class="badge bg-danger">Icyo wahisemo (Wibeshye)</span>
+                        {% elif choice.is_correct %}
+                            <span class="badge bg-success"><i class="fa-solid fa-check me-1"></i> Igisubizo Nyacyo</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Explanation & Law Reference -->
+            <div class="p-3 rounded bg-light border-top mt-2 small">
+                <h6 class="fw-bold text-primary mb-1">
+                    <i class="fa-solid fa-lightbulb text-warning me-1"></i> Ibisobanuro:
+                </h6>
+                <p class="text-dark mb-2">{{ answer.question.explanation_rw }}</p>
+                {% if answer.question.explanation_en %}
+                <p class="text-muted fst-italic mb-2">{{ answer.question.explanation_en }}</p>
+                {% endif %}
+                <div class="text-muted fw-semibold">
+                    <i class="fa-solid fa-scale-balanced me-1 text-secondary"></i> Ingingo y'amategeko: {{ answer.question.legal_reference }}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center py-5">
+            <h5 class="fw-bold">Nta bibazo bibonetse muri iyi filter.</h5>
+            <a href="?filter=all" class="btn btn-sm btn-outline-primary mt-2">Reba Ibibazo Byose</a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="text-center mt-5">
+        <a href="{% url 'examinations:exam_result' attempt.id %}" class="btn btn-outline-secondary me-2">
+            <i class="fa-solid fa-arrow-left me-1"></i> Subira ku Bisubizo
+        </a>
+        <a href="{% url 'examinations:mock_exam' %}" class="btn btn-rw-danger">
+            <i class="fa-solid fa-rotate-right me-1"></i> Kora Ikindi Kizamini
+        </a>
+    </div>
+</div>
+{% endblock %}
+

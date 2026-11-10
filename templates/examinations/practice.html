@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+{% block title %}Kwimenyereza - Ikibazo #{{ current_index }} / {{ total_count }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Top Progress Bar and Navigation -->
+    <div class="card card-custom p-3 mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-2">
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-primary fs-6 px-3 py-2">
+                    Ikibazo #{{ current_index }} muri {{ total_count }}
+                </span>
+                {% if selected_category %}
+                <span class="badge bg-light text-dark border">{{ selected_category.name_rw }}</span>
+                {% endif %}
+                <span class="badge bg-secondary bg-opacity-10 text-secondary">{{ question.get_difficulty_display }}</span>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <!-- Text-to-Speech Voice Button -->
+                <button type="button" class="btn btn-sm btn-outline-primary" id="btnSpeak" onclick="speakQuestion()" title="Vuga ikibazo mu ijwi">
+                    <i class="fa-solid fa-volume-high me-1"></i> <span class="d-none d-sm-inline">Umva Ikibazo</span>
+                </button>
+                {% if user.is_authenticated %}
+                <button id="bookmarkBtn" class="btn btn-sm {% if is_bookmarked %}btn-warning{% else %}btn-outline-secondary{% endif %} fw-semibold" onclick="toggleBookmark({{ question.id }})">
+                    <i class="fa-{% if is_bookmarked %}solid{% else %}regular{% endif %} fa-bookmark me-1" id="bookmarkIcon"></i>
+                    <span id="bookmarkText">{% if is_bookmarked %}Wabitswe{% else %}Bika Ikibazo{% endif %}</span>
+                </button>
+                {% endif %}
+                <a href="{% url 'examinations:practice_list' %}" class="btn btn-sm btn-outline-danger">
+                    <i class="fa-solid fa-xmark me-1"></i> Sohoka
+                </a>
+            </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="progress" style="height: 8px;">
+            <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress_pct }}%;" aria-valuenow="{{ progress_pct }}" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+    </div>
+
+    <!-- Question Card -->
+    <div class="card card-custom p-4 p-md-5 mb-4 shadow-sm">
+        {% if question.road_sign %}
+        <div class="text-center mb-4">
+            <div class="sign-graphic-container mb-2" style="width: 130px; height: 130px;">
+                {{ question.road_sign.svg_content|safe }}
+            </div>
+            <span class="badge bg-light text-dark border">{{ question.road_sign.code }}: {{ question.road_sign.name_rw }}</span>
+        </div>
+        {% endif %}
+
+        <h3 class="fw-bold text-dark mb-2" style="line-height: 1.4;">
+            {{ question.question_text_rw }}
+        </h3>
+        {% if question.question_text_en %}
+        <p class="text-secondary small fst-italic mb-4">
+            {{ question.question_text_en }}
+        </p>
+        {% endif %}
+
+        <!-- Choices selection -->
+        <div class="d-flex flex-column gap-3 my-4" id="choicesContainer">
+            {% for choice in choices %}
+            <div class="choice-option p-3 rounded-3 border d-flex align-items-center gap-3" 
+                 id="choice-{{ choice.id }}" 
+                 data-choice-id="{{ choice.id }}" 
+                 data-is-correct="{{ choice.is_correct|yesno:'true,false' }}"
+                 onclick="selectChoice(this)" 
+                 style="cursor: pointer; transition: all 0.2s;">
+                <span class="choice-letter badge bg-light text-dark border fs-6 px-3 py-2 fw-bold">
+                    {{ choice.letter }}
+                </span>
+                <div class="flex-grow-1">
+                    <div class="fw-semibold text-dark">{{ choice.text_rw }}</div>
+                    {% if choice.text_en %}
+                    <small class="text-muted">{{ choice.text_en }}</small>
+                    {% endif %}
+                </div>
+                <div class="feedback-icon fs-5" style="display: none;"></div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Explanation Section (Initially Hidden) -->
+        <div id="explanationBox" class="p-4 rounded-3 border mt-3" style="display: none;">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="fa-solid fa-lightbulb text-warning fs-5"></i>
+                <h5 class="fw-bold mb-0 text-dark">Ibisobanuro Nyabyo (Explanation)</h5>
+            </div>
+            <p class="text-secondary mb-2" id="explanationText">
+                {{ question.explanation_rw }}
+            </p>
+            {% if question.explanation_en %}
+            <p class="text-muted small fst-italic mb-3">
+                {{ question.explanation_en }}
+            </p>
+            {% endif %}
+            <div class="p-2 rounded bg-light border small text-muted">
+                <strong>Ingingo y'Amategeko:</strong> {{ question.legal_reference }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Buttons -->
+    <div class="d-flex justify-content-between align-items-center">
+        {% if has_prev %}
+        <a href="?page={{ prev_page }}{% if selected_category %}&category={{ selected_category.slug }}{% endif %}{% if only_bookmarks %}&bookmarks=true{% endif %}" class="btn btn-outline-secondary px-4">
+            <i class="fa-solid fa-arrow-left me-2"></i> Ikibazo Kibanziriza (Previous)
+        </a>
+        {% else %}
+        <div></div>
+        {% endif %}
+
+        {% if has_next %}
+        <a href="?page={{ next_page }}{% if selected_category %}&category={{ selected_category.slug }}{% endif %}{% if only_bookmarks %}&bookmarks=true{% endif %}" class="btn btn-rw-primary px-4">
+            Ikibazo Gikurikira (Next) <i class="fa-solid fa-arrow-right ms-2"></i>
+        </a>
+        {% else %}
+        <a href="{% url 'examinations:practice_list' %}" class="btn btn-rw-danger px-4">
+            <i class="fa-solid fa-check-double me-2"></i> Usoje Imyitozo!
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let answered = false;
+
+// Audio Chime Synthesizer using Web Audio API (Zero dependencies)
+function playTone(isCorrect) {
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        if (isCorrect) {
+            // Pleasant high chime: 587Hz -> 880Hz
+            osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.35);
+        } else {
+            // Low alert tone: 220Hz -> 180Hz
+            osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(180, audioCtx.currentTime + 0.25);
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.35);
+        }
+    } catch(e) {}
+}
+
+// Web Speech API Voice Reader
+function speakQuestion() {
+    if (!('speechSynthesis' in window)) {
+        alert("Browser yanyu ntabwo ishyigikiye gusoma mu ijwi (Speech Synthesis not supported).");
+        return;
+    }
+    window.speechSynthesis.cancel(); // Stop any ongoing speech
+
+    const questionText = `{{ question.question_text_rw|escapejs }}`;
+    const utterance = new SpeechSynthesisUtterance(questionText);
+    utterance.rate = 0.95;
+    
+    // Attempt swahili/african voice or default
+    const voices = window.speechSynthesis.getVoices();
+    const suitableVoice = voices.find(v => v.lang.startsWith('sw') || v.lang.startsWith('fr') || v.lang.startsWith('en'));
+    if (suitableVoice) utterance.voice = suitableVoice;
+
+    window.speechSynthesis.speak(utterance);
+}
+
+function selectChoice(element) {
+    if (answered) return; // Prevent multiple clicks
+    answered = true;
+
+    const isCorrect = element.getAttribute('data-is-correct') === 'true';
+    playTone(isCorrect);
+    const allOptions = document.querySelectorAll('.choice-option');
+
+    allOptions.forEach(opt => {
+        opt.style.pointerEvents = 'none'; // disable further clicks
+        const isThisCorrect = opt.getAttribute('data-is-correct') === 'true';
+        const iconDiv = opt.querySelector('.feedback-icon');
+        
+        if (isThisCorrect) {
+            opt.classList.add('border-success', 'bg-success', 'bg-opacity-10');
+            opt.querySelector('.choice-letter').classList.remove('bg-light', 'text-dark');
+            opt.querySelector('.choice-letter').classList.add('bg-success', 'text-white');
+            iconDiv.style.display = 'block';
+            iconDiv.innerHTML = '<i class="fa-solid fa-circle-check text-success"></i>';
+        } else if (opt === element && !isCorrect) {
+            opt.classList.add('border-danger', 'bg-danger', 'bg-opacity-10');
+            opt.querySelector('.choice-letter').classList.remove('bg-light', 'text-dark');
+            opt.querySelector('.choice-letter').classList.add('bg-danger', 'text-white');
+            iconDiv.style.display = 'block';
+            iconDiv.innerHTML = '<i class="fa-solid fa-circle-xmark text-danger"></i>';
+        }
+    });
+
+    // Reveal explanation box
+    const expBox = document.getElementById('explanationBox');
+    expBox.style.display = 'block';
+    if (isCorrect) {
+        expBox.classList.add('bg-success', 'bg-opacity-10', 'border-success');
+    } else {
+        expBox.classList.add('bg-light');
+    }
+}
+
+function toggleBookmark(questionId) {
+    fetch(`/examinations/bookmark/toggle/${questionId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const btn = document.getElementById('bookmarkBtn');
+            const icon = document.getElementById('bookmarkIcon');
+            const text = document.getElementById('bookmarkText');
+            if (data.is_bookmarked) {
+                btn.className = 'btn btn-sm btn-warning fw-semibold';
+                icon.className = 'fa-solid fa-bookmark me-1';
+                text.innerText = 'Wabitswe';
+            } else {
+                btn.className = 'btn btn-sm btn-outline-secondary fw-semibold';
+                icon.className = 'fa-regular fa-bookmark me-1';
+                text.innerText = 'Bika Ikibazo';
+            }
+        }
+    });
+}
+</script>
+{% endblock %}
+

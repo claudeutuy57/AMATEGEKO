@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Kemeza Gusiba - Confirm Delete{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card card-custom p-4 p-md-5 text-center shadow-sm">
+                <div class="d-inline-flex p-3 rounded-circle bg-danger bg-opacity-10 text-danger mx-auto mb-3" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-triangle-exclamation fs-2"></i>
+                </div>
+                <h4 class="fw-extrabold text-dark mb-2">Waba wizeye neza ko ushaka gusiba?</h4>
+                <p class="text-secondary mb-4">
+                    Ugiye gusiba burundu: <strong>{{ item }}</strong>.<br>
+                    Iki gikorwa ntigishobora gusubizwa inyuma.
+                </p>
+
+                <form method="post" class="d-flex justify-content-center gap-3">
+                    {% csrf_token %}
+                    <a href="{% url cancel_url %}" class="btn btn-secondary px-4">
+                        Kureka (Cancel)
+                    </a>
+                    <button type="submit" class="btn btn-danger px-4">
+                        <i class="fa-solid fa-trash me-2"></i> Siba Burundu
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

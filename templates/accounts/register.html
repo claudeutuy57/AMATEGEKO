@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Iyandikishe (Register) - AMATEGEKO Y'UMUHANDA{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card card-custom p-4 p-md-5 shadow-sm">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex p-3 rounded-circle bg-success bg-opacity-10 text-success mb-3">
+                        <i class="fa-solid fa-user-plus fs-3"></i>
+                    </div>
+                    <h3 class="fw-extrabold text-dark">Fungura Konti Y'Umunyeshuri</h3>
+                    <p class="text-secondary small">Iyandikishe utangire kwiga no gukurikirana amanota yawe</p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Izina ry'Iribukiro (First Name) *</label>
+                            {{ form.first_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Izina ry'Umuryango (Last Name) *</label>
+                            {{ form.last_name }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Izina ryo Kwinjira (Username) *</label>
+                            {{ form.username }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Email *</label>
+                            {{ form.email }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Nimero ya Telefone</label>
+                            {{ form.phone_number }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Ururimi rw'Ikizamini</label>
+                            {{ form.preferred_language }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Ijambo ry'ibanga (Password) *</label>
+                            {{ form.password1 }}
+                            <small class="text-muted d-block mt-1">Nibura inyuguti 6 cyangwa imibare.</small>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Subiramo Ijambo ry'ibanga (Confirm Password) *</label>
+                            {{ form.password2 }}
+                        </div>
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn btn-rw-primary w-100 py-2">
+                                <i class="fa-solid fa-check me-2"></i> Fungura Konti Yanjye
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="text-center mt-4 pt-3 border-top">
+                    <p class="small text-secondary mb-0">
+                        Usanzwe ufite konti? 
+                        <a href="{% url 'accounts:login' %}" class="fw-bold text-primary text-decoration-none">Injira hano</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

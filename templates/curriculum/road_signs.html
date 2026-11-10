@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}Isomero ry'Ibyapa byo mu Muhanda - Road Signs Library{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center max-w-xl mx-auto mb-4">
+        <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill fw-bold mb-2">
+            IBYAPA BYO MU MUHANDA MU RWANDA
+        </span>
+        <h1 class="fw-extrabold" style="color: #0f2b5c;">
+            Isomero Ry'Ibyapa Byose byo mu Muhanda
+        </h1>
+        <p class="text-secondary">
+            Ibyapa biburira, ibibuza, ibitegeka, ibimenyesha n'iby'icyerekezo byifashishwa mu kizamini cy'uruhushya rw'agateganyo.
+        </p>
+    </div>
+
+    <!-- Filter and Search Bar -->
+    <div class="card card-custom p-3 mb-4">
+        <div class="row g-3 align-items-center">
+            <div class="col-md-7">
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{% url 'curriculum:road_signs' %}" class="btn btn-sm {% if not selected_type %}btn-dark{% else %}btn-outline-secondary{% endif %} rounded-pill">
+                        Byose (All)
+                    </a>
+                    {% for code, label in categories %}
+                    <a href="{% url 'curriculum:road_signs' %}?type={{ code }}{% if query %}&q={{ query }}{% endif %}" 
+                       class="btn btn-sm {% if selected_type == code %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill">
+                        {{ label|truncatechars:28 }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-md-5">
+                <form method="get" class="d-flex">
+                    {% if selected_type %}
+                    <input type="hidden" name="type" value="{{ selected_type }}">
+                    {% endif %}
+                    <div class="input-group">
+                        <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Shakisha icyapa (urugero: A1, STOP, Ikoni)...">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fa-solid fa-magnifying-glass"></i> Shakisha
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Road Signs Grid -->
+    <div class="row g-4">
+        {% for sign in signs %}
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="card card-custom h-100 p-3 text-center d-flex flex-column">
+                <div class="sign-graphic-container my-2" style="width: 100px; height: 100px;">
+                    {{ sign.svg_content|safe }}
+                </div>
+                <div class="mt-2">
+                    <span class="badge bg-light text-dark border px-2 py-1 fw-bold">{{ sign.code }}</span>
+                </div>
+                <h6 class="fw-bold mt-2 mb-1 text-dark">{{ sign.name_rw }}</h6>
+                <small class="text-muted d-block mb-2">{{ sign.name_en }}</small>
+                <p class="small text-secondary flex-grow-1 mb-3" style="font-size: 0.85rem;">
+                    {{ sign.meaning_rw|truncatechars:90 }}
+                </p>
+                <a href="{% url 'curriculum:road_sign_detail' sign.code %}" class="btn btn-sm btn-outline-primary w-100 mt-auto">
+                    Ibisobanuro n'Amategeko <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="fa-solid fa-triangle-exclamation text-muted fs-1 mb-3"></i>
+            <h5 class="fw-bold">Nta cyapa cyabonetse gihuje n'ibyo mushakishije.</h5>
+            <a href="{% url 'curriculum:road_signs' %}" class="btn btn-sm btn-outline-primary mt-2">Reba Ibyapa Byose</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+

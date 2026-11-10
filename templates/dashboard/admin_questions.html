@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% block title %}Question Bank Management - Admin Portal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard:admin_dashboard' %}">Admin</a></li>
+                    <li class="breadcrumb-item active">Questions</li>
+                </ol>
+            </nav>
+            <h2 class="fw-extrabold text-dark mb-0">Question Bank ({{ total_count }} Ibibazo)</h2>
+        </div>
+        <a href="{% url 'dashboard:admin_question_create' %}" class="btn btn-rw-primary">
+            <i class="fa-solid fa-plus me-1"></i> Ongeraho Ikibazo Gishyashya
+        </a>
+    </div>
+
+    <!-- Filter & Search Bar -->
+    <div class="card card-custom p-3 mb-4">
+        <form method="get" class="row g-2">
+            <div class="col-md-5">
+                <input type="text" name="q" value="{{ query }}" class="form-control form-control-sm" placeholder="Shakisha mu kibazo cyangwa numero...">
+            </div>
+            <div class="col-md-4">
+                <select name="category" class="form-select form-select-sm">
+                    <option value="">Ibyiciro Byose</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name_rw }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select name="difficulty" class="form-select form-select-sm">
+                    <option value="">Uburemere Bwose</option>
+                    <option value="EASY" {% if selected_difficulty == "EASY" %}selected{% endif %}>Kworoshye (Easy)</option>
+                    <option value="MEDIUM" {% if selected_difficulty == "MEDIUM" %}selected{% endif %}>Kuringaniye (Medium)</option>
+                    <option value="HARD" {% if selected_difficulty == "HARD" %}selected{% endif %}>Gikomeye (Hard)</option>
+                </select>
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-sm btn-primary w-100">
+                    <i class="fa-solid fa-filter"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Questions Table -->
+    <div class="card card-custom p-0 overflow-hidden shadow-sm mb-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 80px;">No.</th>
+                        <th>Ikibazo (Kinyarwanda)</th>
+                        <th>Icyiciro</th>
+                        <th>Uburemere</th>
+                        <th>Icyapa</th>
+                        <th class="text-end" style="width: 140px;">Ibikorwa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for q in page_obj %}
+                    <tr>
+                        <td class="fw-bold text-primary">#{{ q.question_number }}</td>
+                        <td>
+                            <div class="fw-semibold text-dark">{{ q.question_text_rw|truncatechars:100 }}</div>
+                            {% if q.question_text_en %}
+                            <small class="text-muted d-block">{{ q.question_text_en|truncatechars:90 }}</small>
+                            {% endif %}
+                        </td>
+                        <td><span class="badge bg-light text-dark border">{{ q.category.name_rw }}</span></td>
+                        <td>
+                            <span class="badge {% if q.difficulty == 'EASY' %}bg-success{% elif q.difficulty == 'MEDIUM' %}bg-warning text-dark{% else %}bg-danger{% endif %}">
+                                {{ q.get_difficulty_display }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if q.road_sign %}
+                            <span class="badge bg-secondary">{{ q.road_sign.code }}</span>
+                            {% else %}
+                            <span class="text-muted small">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <a href="{% url 'dashboard:admin_question_edit' q.id %}" class="btn btn-sm btn-outline-primary py-1 px-2" title="Edit">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <a href="{% url 'dashboard:admin_question_delete' q.id %}" class="btn btn-sm btn-outline-danger py-1 px-2 ms-1" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">Nta kibazo cyabonetse.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Questions pagination">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}">&laquo; Mbere</a>
+            </li>
+            {% endif %}
+
+            <li class="page-item disabled">
+                <span class="page-link">Urupapuro {{ page_obj.number }} muri {{ page_obj.paginator.num_pages }}</span>
+            </li>
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}">Ibikurikira &raquo;</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
+

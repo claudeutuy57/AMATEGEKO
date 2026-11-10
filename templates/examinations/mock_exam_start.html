@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}Ikizamini cya Leta cy'Icyitegererezo - Official Mock Exam{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card card-custom p-4 p-md-5 shadow-lg border-0">
+                <div class="text-center mb-4">
+                    <span class="badge bg-danger px-3 py-2 rounded-pill fw-bold mb-3 fs-6">
+                        POLISI Y'U RWANDA / IREMBO SIMULATION
+                    </span>
+                    <h2 class="fw-extrabold text-dark" style="color: #0f2b5c;">
+                        Ikizamini cya Leta cy'Icyitegererezo (Official Mock Exam)
+                    </h2>
+                    <p class="text-secondary">
+                        Iki kizamini giteguye mu buryo bwa nyabwo buhuje 100% n'ikizamini cy'uruhushya rw'agateganyo gitangirwa kuri mudasobwa za Polisi y'u Rwanda.
+                    </p>
+                </div>
+
+                <!-- Verified Official Requirements Grid -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="p-3 border rounded-3 bg-light text-center h-100">
+                            <i class="fa-solid fa-list-ol fs-2 text-primary mb-2"></i>
+                            <h4 class="fw-bold mb-1 text-dark">{{ total_questions }}</h4>
+                            <p class="small text-muted mb-0">Ibibazo Byose</p>
+                            <small class="text-secondary">(Bitoranywa mu buryo bwa random)</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 border rounded-3 bg-light text-center h-100">
+                            <i class="fa-solid fa-clock fs-2 text-danger mb-2"></i>
+                            <h4 class="fw-bold mb-1 text-dark">{{ duration_minutes }} min</h4>
+                            <p class="small text-muted mb-0">Igihe cy'Ikizamini</p>
+                            <small class="text-secondary">(Isegonda 60 kuri buri kibazo)</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 border rounded-3 bg-light text-center h-100">
+                            <i class="fa-solid fa-shield-check fs-2 text-success mb-2"></i>
+                            <h4 class="fw-bold mb-1 text-dark">{{ pass_mark }} / {{ total_questions }}</h4>
+                            <p class="small text-muted mb-0">Amanota yo Gutsinda</p>
+                            <small class="text-success fw-bold">({{ pass_percentage }}% - WATSINZE)</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Critical Instructions -->
+                <div class="card bg-light border p-4 mb-4">
+                    <h5 class="fw-bold text-dark mb-3">
+                        <i class="fa-solid fa-triangle-exclamation text-warning me-2"></i> Amabwiriza y'Ikizamini:
+                    </h5>
+                    <ul class="list-unstyled d-flex flex-column gap-2 small text-secondary mb-0">
+                        <li><i class="fa-solid fa-circle-check text-success me-2"></i> Buri kibazo gifite amahitamo ane (A, B, C, D) n'igisubizo kimwe cy'ukuri.</li>
+                        <li><i class="fa-solid fa-circle-check text-success me-2"></i> Ushobora gusimbuka ikibazo ukaza kukigarukaho mbere y'uko igihe kirangira.</li>
+                        <li><i class="fa-solid fa-circle-check text-success me-2"></i> Iyo iminota 20 irangiye, ikizamini **cyikora cyonyine** kigahita cyerekana amanota yawe.</li>
+                        <li><i class="fa-solid fa-circle-check text-success me-2"></i> Nyuma y'ikizamini, urahita ubona urutonde rw'amakosa wakoze n'ibisobanuro byayo byose.</li>
+                    </ul>
+                </div>
+
+                <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+                    <a href="{% url 'core:home' %}" class="btn btn-outline-secondary px-4 py-2">
+                        <i class="fa-solid fa-arrow-left me-1"></i> Subira Inyuma
+                    </a>
+                    <a href="{% url 'examinations:mock_exam' %}" class="btn btn-rw-danger btn-lg px-5 py-3 shadow">
+                        <i class="fa-solid fa-play me-2"></i> Tangira Ikizamini Ubu!
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

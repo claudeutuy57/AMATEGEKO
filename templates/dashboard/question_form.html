@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} - Admin Portal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card card-custom p-4 p-md-5 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                    <div>
+                        <span class="badge bg-danger px-3 py-1 rounded-pill mb-1">QUESTION EDITOR</span>
+                        <h3 class="fw-extrabold text-dark mb-0">{{ title }}</h3>
+                    </div>
+                    <a href="{% url 'dashboard:admin_questions' %}" class="btn btn-outline-secondary">
+                        <i class="fa-solid fa-arrow-left me-1"></i> Subira ku Rutonde
+                    </a>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <h5 class="fw-bold text-primary mb-3">1. Amakuru y'Ikibazo (Question Details)</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">Numero y'Ikibazo (No.) *</label>
+                            {{ form.question_number }}
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold">Icyiciro (Category) *</label>
+                            {{ form.category }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Uburemere (Difficulty) *</label>
+                            {{ form.difficulty }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Icyapa Gifitanye Isano (Road Sign)</label>
+                            {{ form.road_sign }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Ingingo y'Amategeko (Legal Article)</label>
+                            {{ form.legal_reference }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Ikibazo mu Kinyarwanda *</label>
+                            {{ form.question_text_rw }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Ikibazo mu Cyongereza (English Translation)</label>
+                            {{ form.question_text_en }}
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold text-success mb-3">2. Amahitamo 4 n'Igisubizo Nyacyo (Choices & Correct Answer)</h5>
+                    <div class="p-3 bg-light rounded-3 border mb-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-danger">Hitamo Igisubizo Nyacyo muri byo: *</label>
+                            <div class="w-25">
+                                {{ form.correct_choice }}
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <!-- Choice A -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Igisubizo A (Kinyarwanda) *</label>
+                                {{ form.choice_a }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted">Answer A (English)</label>
+                                {{ form.choice_a_en }}
+                            </div>
+
+                            <!-- Choice B -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Igisubizo B (Kinyarwanda) *</label>
+                                {{ form.choice_b }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted">Answer B (English)</label>
+                                {{ form.choice_b_en }}
+                            </div>
+
+                            <!-- Choice C -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Igisubizo C (Kinyarwanda) *</label>
+                                {{ form.choice_c }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted">Answer C (English)</label>
+                                {{ form.choice_c_en }}
+                            </div>
+
+                            <!-- Choice D -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Igisubizo D (Kinyarwanda) *</label>
+                                {{ form.choice_d }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted">Answer D (English)</label>
+                                {{ form.choice_d_en }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold text-warning mb-3">3. Ibisobanuro ku Gisubizo (Explanations)</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Ibisobanuro mu Kinyarwanda *</label>
+                            {{ form.explanation_rw }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Ibisobanuro mu Cyongereza</label>
+                            {{ form.explanation_en }}
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check">
+                                {{ form.is_active }}
+                                <label class="form-check-label fw-semibold" for="{{ form.is_active.id_for_label }}">
+                                    Iki kibazo gikora mu bizamini (Active in examinations)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between pt-3 border-top">
+                        <a href="{% url 'dashboard:admin_questions' %}" class="btn btn-outline-secondary">Kureka (Cancel)</a>
+                        <button type="submit" class="btn btn-rw-primary px-4 py-2">
+                            <i class="fa-solid fa-floppy-disk me-2"></i> Bika Ikibazo (Save Question)
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
