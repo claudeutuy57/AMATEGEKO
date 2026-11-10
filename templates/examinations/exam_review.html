@@ -72,11 +72,11 @@
             {% endif %}
 
             <h5 class="fw-bold text-dark mb-2">
-                {{ answer.question.question_text_rw }}
+                {{ forloop.counter }}. {{ answer.question.question_text_rw }}
             </h5>
             {% if answer.question.question_text_en %}
             <p class="text-secondary small fst-italic mb-3">
-                {{ answer.question.question_text_en }}
+                Question {{ forloop.counter }}: {{ answer.question.question_text_en }}
             </p>
             {% endif %}
 

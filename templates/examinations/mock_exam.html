@@ -206,10 +206,11 @@ function renderQuestion(index) {
     });
 
     const q = questions[currentIndex];
-    document.getElementById("qNumberBadge").innerText = `Ikibazo #${currentIndex + 1} muri ${totalQuestions}`;
+    const displayNum = currentIndex + 1;
+    document.getElementById("qNumberBadge").innerText = `Ikibazo #${displayNum} muri ${totalQuestions}`;
     document.getElementById("qCategoryBadge").innerText = q.category;
-    document.getElementById("qTextRw").innerText = q.text_rw;
-    document.getElementById("qTextEn").innerText = q.text_en || "";
+    document.getElementById("qTextRw").innerText = `${displayNum}. ${q.text_rw}`;
+    document.getElementById("qTextEn").innerText = q.text_en ? `Question ${displayNum}: ${q.text_en}` : "";
 
     // Road sign / Image check
     const signBox = document.getElementById("qSignContainer");

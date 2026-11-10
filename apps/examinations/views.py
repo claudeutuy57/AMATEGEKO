@@ -181,8 +181,9 @@ def mock_exam_start(request):
 
 def get_mixed_exam_questions(total_count=20, cat_id=None, difficulty=None):
     """
-    Selects a balanced mix of road signs/images and text-based traffic rule questions.
-    Typical ratio: ~45% visual/signs, ~55% text/words.
+    Selects a balanced mix of road signs/images and text-based traffic rule questions
+    from the authentic official Rwanda Police question bank.
+    Mix: ~45% visual/signs (e.g. 9) and ~55% text/words (e.g. 11).
     """
     base_qs = Question.objects.filter(is_active=True).select_related('category', 'road_sign').prefetch_related('choices')
     if cat_id:
@@ -190,13 +191,17 @@ def get_mixed_exam_questions(total_count=20, cat_id=None, difficulty=None):
     if difficulty in ['EASY', 'MEDIUM', 'HARD']:
         base_qs = base_qs.filter(difficulty=difficulty)
 
+    # Prioritize authentic official Rwanda Police questions (questions 1 to 404 from the PDF)
+    official_qs = base_qs.filter(question_number__lte=404)
+    pool = official_qs if official_qs.count() >= total_count else base_qs
+
     # 1. Sign / visual questions (has road_sign or image)
-    sign_qs = base_qs.filter(
+    sign_qs = pool.filter(
         Q(road_sign__isnull=False) | (Q(image__isnull=False) & ~Q(image=''))
     )
 
     # 2. Text / word questions (no road_sign and no image)
-    word_qs = base_qs.filter(
+    word_qs = pool.filter(
         road_sign__isnull=True,
         image__in=['', None]
     )

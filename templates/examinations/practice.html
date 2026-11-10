@@ -56,11 +56,11 @@
         {% endif %}
 
         <h3 class="fw-bold text-dark mb-2" style="line-height: 1.4;">
-            {{ question.question_text_rw }}
+            {{ current_index }}. {{ question.question_text_rw }}
         </h3>
         {% if question.question_text_en %}
         <p class="text-secondary small fst-italic mb-4">
-            {{ question.question_text_en }}
+            Question {{ current_index }}: {{ question.question_text_en }}
         </p>
         {% endif %}
 
